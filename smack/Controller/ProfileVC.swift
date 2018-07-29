@@ -42,8 +42,9 @@ class ProfileVC: UIViewController {
     
     @IBAction func logoutPressed(_ sender: Any) {
         UserAuthServices.instance.isLoggedIn = false
-        UserDataServices.instance.setUserData(userModel: UserModel(avatarColor: "", avatarName: "", email: "", name: "<#T##String#>", _id: ""))
+        UserDataServices.instance.setUserData(userModel: UserModel(avatarColor: "", avatarName: "", email: "", name: "", _id: ""))
         UserAuthServices.instance.userToken = ""
+        MessageService.instance.channelAdded = false
         NotificationCenter.default.post(name: NOTIF_USER_DID_CHANGE, object: nil)
         closePressed(self)
 

@@ -10,12 +10,15 @@ import Foundation
 
 typealias completionHandler = (_ success :Bool)->()
 
-//let BASE_URL = "http://localhost:3005/v1/"
-let BASE_URL = "https://deevdchat.herokuapp.com/v1/"
+let BASE_URL = "http://localhost:3005/v1/"
+//let BASE_URL = "https://deevdchat.herokuapp.com/v1/"
 let REGISTER_URL = "\(BASE_URL)account/register"
 let LOGIN_URL =  "\(BASE_URL)account/login"
 let ADD_USER = "\(BASE_URL)user/add"
 let FIND_USER = "\(BASE_URL)user/byEmail/"
+let FIND_ALL_CHANNEL = "\(BASE_URL)channel"
+let ADD_CHANNEL = "\(BASE_URL)channel/add"
+let GET_MESSAGE = "\(BASE_URL)message/byChannel"
 
 // header
 let HEADER : [String : String] = [
@@ -24,12 +27,14 @@ let HEADER : [String : String] = [
 
 let AUTH_HEADER  : [String : String] = [
     "Content-Type" : "application/json; charset=utf-8",
-    "Authorization" : UserAuthServices.instance.userToken
+    "Authorization" : "Bearer \(UserAuthServices.instance.userToken)"
 ]
 
 // notifiation
 
 let NOTIF_USER_DID_CHANGE = Notification.Name("Notif User Data Changed")
+let NOTIF_CHANNEL_SELECTED = Notification.Name("channel selected")
+
 
 //segue
 let TO_LOGIN = "to_login"

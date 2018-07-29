@@ -24,11 +24,13 @@ class UserAuthServices{
         }
     }
     
-
-    
     var userToken  : String{
         get{
-            return defaults.string(forKey: TOKEN_KEY) as!  String
+            if let token = defaults.string(forKey: TOKEN_KEY) as? String{
+                return token
+            }else{
+                return ""
+            }
         }
         set {
             return defaults.set(newValue, forKey: TOKEN_KEY)
@@ -44,8 +46,7 @@ class UserAuthServices{
         }
     }
     
-   
-    
+
     func register(email:String,pass:String,completion : @escaping completionHandler) {
         if networkAvaliable.isConnectedToNetwork(){
             let lowerEmail = email.lowercased()
@@ -82,7 +83,7 @@ class UserAuthServices{
                 "password" :pass
             ]
             
-            print("loginEmail  \(lowerEmail)loginPass   \(pass)" )
+            print("loginEmail  \(lowerEmail)loginPass\(pass)" )
             Alamofire.request(
                 LOGIN_URL, method: .post, parameters: params, encoding: JSONEncoding.default, headers: HEADER).responseJSON(){
                     response in
@@ -91,9 +92,12 @@ class UserAuthServices{
                         if let json =  response.result.value as? Dictionary<String,Any>{
                             if let email = json["user"] as? String{
                                 self.userEmail = email
+                                print("email store ")
+
                             }
                             if let token = json["token"] as? String{
                                 self.userToken = token
+                                print("token store")
                             }
                         }
                         completion(true)
@@ -112,10 +116,11 @@ class UserAuthServices{
             let url = "\(FIND_USER)\(email)"
             let AUTH_HEADER  : [String : String] = [
                 "Content-Type" : "application/json; charset=utf-8",
-                "Authorization" :"Bearer \(userToken)"
+                "Authorization" :"Bearer \(self.userToken)"
             ]
             Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: AUTH_HEADER).responseString { (response) in
                 if response.result.isSuccess{
+                    print("find user success \(response.result.value)")
                     let decoder = JSONDecoder()
                     do{
                         if let data = response.data{
@@ -126,10 +131,11 @@ class UserAuthServices{
                         }
                     }catch{
                         completion(false)
-                        debugPrint("decodeFial \(response.error)")
+                        debugPrint("find user decodeFial \(response.error)")
                     }
                     
                 }else{
+                
                   print("error \(response.error)")
                 }
             }
@@ -154,6 +160,7 @@ class UserAuthServices{
             print("add user token \(userToken)")
             Alamofire.request(ADD_USER, method: .post, parameters: params, encoding: JSONEncoding.default, headers: AUTH_HEADER).responseString() { (response) in
                 if response.result.isSuccess {
+                    print("add user success\(response.result)")
                     let decoder = JSONDecoder()
                     do{
                         if let data = response.data{
@@ -164,7 +171,7 @@ class UserAuthServices{
                         }
                     }catch{
                         completion(false)
-                        debugPrint("decodeFial \(response.error)")
+                        debugPrint("decodeFial add user fail \(response.error)")
                     }
             
                 
